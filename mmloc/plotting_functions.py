@@ -16,10 +16,7 @@ def normalized_data_to_utm(dd):
     d2 = dd[:, 1]
     d3 = dd[:, 2]
     d4 = dd[:, 3]
-
-    # inverse_to_utm_x = lambda x: (min_c1 + (x + 1) * (max_c1 - min_c1) / 2)
-    # inverse_to_utm_y = lambda x: (min_c2 + (x + 1) * (max_c2 - min_c2) / 2)
-
+    
     inverse_to_utm_x = lambda x: (min_c1 + x * (max_c1 - min_c1))
     inverse_to_utm_y = lambda x: (min_c2 + x * (max_c2 - min_c2))
     
@@ -29,7 +26,6 @@ def normalized_data_to_utm(dd):
     id4 = inverse_to_utm_y(d4)
     
     return np.transpose(np.vstack((np.vstack((id1, id2)), np.vstack((id3, id4)))))
-
 
 def cal_error_in_meters(data):
     data = normalized_data_to_utm(data)
@@ -94,7 +90,7 @@ def visualization(locationtest, locPrediction, suffix):
     # save error line fig
     fig.savefig("errors_visualization_" + str(suffix) + ".pdf")
 
-def draw_cdf_picture(locationtest,locPrediction,model_name):
+def draw_cdf_picture(locationtest,locPrediction,model_name,scenario):
     fig=plt.figure()
     bin_edge,cdf=cdfdiff(target=locationtest,predict=locPrediction)
     plt.plot(bin_edge[0:-1],cdf,linestyle='--',label=str(model_name),color='r')
@@ -105,9 +101,9 @@ def draw_cdf_picture(locationtest,locPrediction,model_name):
     plt.legend(str(model_name),loc='upper right')
     plt.grid(True)
     plt.title((str(model_name)+' CDF'))
-    fig.savefig("scenarioAcdf/"+str(model_name)+"_CDF.pdf")
+    fig.savefig(scenario+"/cdf/"+str(model_name)+"_CDF.pdf")
     
-def print_locprediction(locationtest,aveLocPrediction,model_name):
+def print_locprediction(locationtest,aveLocPrediction,model_name,scenario):
     fig=plt.figure()
     data=normalized_data_to_utm(np.hstack((locationtest, aveLocPrediction)))
     plt.plot(data[:,0],data[:,1],'b',data[:,2],data[:,3],'r')
@@ -115,4 +111,4 @@ def print_locprediction(locationtest,aveLocPrediction,model_name):
     plt.xlabel("x-latitude")
     plt.ylabel("y-longitude")
     plt.title(str(model_name)+" Prediction")
-    fig.savefig("scenarioApredictionpng/"+str(model_name)+"_locprediction.png")
+    fig.savefig(scenario+"/predictionpng/"+str(model_name)+"_locprediction.png")
