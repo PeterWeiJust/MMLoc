@@ -27,7 +27,7 @@ LR=0.05
 DownSample_num=100
 
 model_name="overlap_downsample_sensor_scenarioA"
-
+'''
 SensorTrain1, location1 = overlapping('overlap_timestep1000/1_timestep1000_overlap900.csv',3, time_step)
 SensorTrain2, location2 = overlapping('overlap_timestep1000/2_timestep1000_overlap900.csv',3, time_step)
 SensorTrain3, location3 = overlapping('overlap_timestep1000/3_timestep1000_overlap900.csv',3, time_step)
@@ -64,6 +64,15 @@ location=np.concatenate((location1,location2,location3,location4,location5,locat
 
 Sensor_val=np.concatenate((SensorTrain9,SensorTrain10,SensorTrain11,SensorTrain12,SensorTrain13),axis=0)
 loc_val=np.concatenate((location9,location10,location11,location12,location13),axis=0)
+'''
+SensorTrain=np.load()
+locationtrain=np.load()
+
+SensorVal=np.load()
+locationval=np.load()
+
+SensorTest=np.load()
+locationtest=np.load()
 
 model = Sequential()
 model.add(LSTM(
@@ -75,8 +84,8 @@ model.compile(optimizer=RMSprop(LR),
                  loss='mse',metrics=['acc'])
 
 
-model.fit(SensorTrain, location,
-                       validation_data=(Sensor_val,loc_val),
+model.fit(SensorTrain, locationtrain,
+                       validation_data=(SensorVal,locationval),
                        epochs=epoch, batch_size=batch_size, verbose=1,
                        #shuffle=False,
                        callbacks=[TensorBoard(log_dir='Tensorboard/downsampling_300'),
@@ -88,10 +97,10 @@ model.fit(SensorTrain, location,
 #save model
 model.save("scenarioAmodel/"+str(model_name)+".h5")
 
-locPrediction = model.predict(SensorTrain14,batch_size=batch_size)
+locPrediction = model.predict(SensorTest,batch_size=batch_size)
 aveLocPrediction = pf.get_ave_prediction(locPrediction, batch_size)
 
 #print location prediction picture
-pf.print_locprediction(location14,aveLocPrediction,model_name)
+pf.print_locprediction(locationtest,aveLocPrediction,model_name)
 #draw cdf picture
 pf.draw_cdf_picture(location14,locPrediction,model_name)

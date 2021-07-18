@@ -11,13 +11,10 @@ import math
 import json
 import plotting_functions as pf
 import pandas as pd
-from data_functions import SensorBaselineDataset
+import tensorflow.flags as flags
 from keras.models import Model,load_model
 from keras.layers import Dense, concatenate, LSTM, TimeDistributed,Input
-from sklearn.preprocessing import MinMaxScaler
-from sklearn.metrics import mean_squared_error
 from keras.optimizers import Adam, RMSprop
-from keras.utils import plot_model
 from keras.callbacks import EarlyStopping, Callback, TensorBoard
 
 np.random.seed(7)
@@ -31,8 +28,10 @@ batch_size=100
 LR = 0.005
 epoch=200
 
-model_name = "sensor_baseline_scenarioA"
+flags.DEFINE_string("scenario", default="scenarioA", help="select scenarioA or scenarioB")
 
+model_name = "sensor_baseline_scenarioA"
+'''
 train_sensor=SensorBaselineDataset()
 SensorTrain=train_sensor.sensortrain
 locationtrain=train_sensor.labeltrain
@@ -40,6 +39,15 @@ SensorVal=train_sensor.sensorval
 locationval=train_sensor.labelval
 SensorTest=train_sensor.sensortest
 locationtest=train_sensor.labeltest
+'''
+SensorTrain=np.load()
+locationtrain=np.load()
+
+SensorVal=np.load()
+locationval=np.load()
+
+SensorTest=np.load()
+locationtest=np.load()
 
 tensorboard = TensorBoard(log_dir='logs/{}'.format(model_name))
 sensorinput=Input(shape=(SensorTrain.shape[1], SensorTrain.shape[2]))

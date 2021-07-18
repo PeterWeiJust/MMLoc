@@ -15,18 +15,16 @@ from keras.callbacks import EarlyStopping, Callback, TensorBoard
 # Hyper-parameters
 sensor_input_size = 3
 wifi_input_size = 102
-hidden_size = 200
+hidden_size = 256
 batch_size = 100
 output_dim = 2
 num_epochs = 200
 learning_rate = 0.001
-time_step=1000
-DownSample_num=100
 
 model_name = "mmloc_scenarioA_overlap"
 
 #load downsample dataset
-
+'''
 SensorTrain1, location1 = overlapping('overlap_timestep1000/1_timestep1000_overlap900.csv',3, time_step)
 SensorTrain2, location2 = overlapping('overlap_timestep1000/2_timestep1000_overlap900.csv',3, time_step)
 SensorTrain3, location3 = overlapping('overlap_timestep1000/3_timestep1000_overlap900.csv',3, time_step)
@@ -74,6 +72,19 @@ WifiVal=np.concatenate((Wifis[8],Wifis[9],Wifis[10],Wifis[11],Wifis[12]),axis=0)
 SensorTest=SensorTrain14
 locationtest=location14
 WifiTest=Wifis[13]
+'''
+
+SensorTrain=np.load()
+locationtrain=np.load()
+WifiTrain=np.load()
+
+SensorVal=np.load()
+locationval=np.load()
+WifiVal=np.load()
+
+SensorTest=np.load()
+locationtest=np.load()
+WifiTest=np.load()
 
 #construct mmloc model
 sensorinput=Input(shape=(SensorTrain.shape[1], SensorTrain.shape[2]))
@@ -86,11 +97,7 @@ wifi=Dense(hidden_size)(wifi)
 wifi=ReLU()(wifi)
 wifioutput=Dense(hidden_size)(wifi)
 
-#merge style: multiply
-rssmodel=load_model("edinmodel/rssrate_edin.h5")
-wifioutput=Multiply()([wifioutput,rssmodel(wifiinput)])
-merge=Add()([sensoroutput,wifioutput])
-#merge=concatenate([sensoroutput,wifioutput])
+merge=concatenate([sensoroutput,wifioutput])
 hidden=Dense(hidden_size,activation='relu')(merge)
 output=Dense(output_dim,activation='relu')(hidden)
 mmloc=Model(inputs=[sensorinput,wifiinput],outputs=[output])

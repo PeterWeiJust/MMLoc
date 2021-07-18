@@ -15,9 +15,7 @@ import pandas as pd
 from keras.models import Sequential,Model,load_model
 from keras.layers import Dense, concatenate, LSTM,Input,Dropout
 from keras.optimizers import Adam, RMSprop,SGD
-from keras.utils import plot_model
 from keras.callbacks import Callback, TensorBoard
-from data_functions import combine_wifi
 
 np.random.seed(7)
 
@@ -30,7 +28,7 @@ learning_rate = 0.001
 epoch=20
 
 model_name = "wifi_scenarioA"
-
+'''
 Wifis=[]
 locations=[]
 for i in range(1,15):
@@ -46,6 +44,15 @@ locationval=np.concatenate((locations[8],locations[9],locations[10],locations[11
 
 WifiTest=Wifis[13]
 locationtest=locations[13]
+'''
+WifiTrain=np.load()
+locationlabel=np.load()
+
+WifiVal=np.load()
+locationval=np.load()
+
+WifiTest=np.load()
+locationtest=np.load()
 
 tensorboard = TensorBoard(log_dir='logs/{}'.format(model_name))
 model = Sequential()
