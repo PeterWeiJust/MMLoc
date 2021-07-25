@@ -1,12 +1,3 @@
-#!/usr/bin/env python3
-# -*- coding: utf-8 -*-
-"""
-Created on Sun Nov  1 22:24:33 2020
-
-@author: weixijia
-"""
-
-
 import os
 import pandas as pd
 import numpy as np
@@ -15,14 +6,58 @@ import xml.dom.minidom
 import collections
 import sys
 import warnings
+import os
+import xml.dom.minidom
+import collections
 if not sys.warnoptions:
     warnings.simplefilter("ignore")
     
 import matplotlib.pyplot as plt
 from tqdm import tqdm
 
-folder="wifirss0430"
-    
+folder="wifi"
+
+class WifiRecord(object):
+    world_wifi = {}
+    world_ordered_wifi = {}
+
+    def __init__(self, path):
+        self.traverse_all(path)
+        self.generate_ordered_wifi()
+
+    def scan_wifi(self, file_name):
+        dom = xml.dom.minidom.parse(file_name)
+        root = dom.documentElement
+
+        wr_list = root.getElementsByTagName('wr')
+        for item, i in zip(wr_list, range(len(wr_list))):  # for each time step
+            for record, j in zip(item.childNodes, range(len(item.childNodes))):  # for each AP
+                if j % 2:
+                    ap = item.childNodes[j].getAttribute("b")
+                    if ap not in self.world_wifi.keys():
+                        self.world_wifi[ap] = 1
+                    else:
+                        self.world_wifi[ap] = self.world_wifi[ap] + 1
+
+    def traverse_all(self, path):
+        dirs = os.listdir(path)
+        for dir in dirs:
+            if dir != '.DS_Store':
+                dir = os.path.join(path, dir)
+                self.scan_wifi(dir)
+
+    def generate_ordered_wifi(self):
+        self.world_ordered_wifi = collections.OrderedDict(
+            sorted(self.world_wifi.items(), key=lambda t: t[1], reverse=True))
+
+
+def write_ap_to_file(wr, filename):
+    file = open(filename, 'w')
+    for wifi_id, times, rank in zip(wr.world_ordered_wifi.keys(), wr.world_ordered_wifi.values(),
+                                    range(len(wr.world_ordered_wifi))):
+        file.write('{}\t{}\t{}\n'.format(str(wifi_id), str(times), str(rank + 1)))
+    file.close()
+
 def processwifi(folder,dir):
     logfile=pd.read_table(str(folder)+'/'+ dir,sep='\s+',delimiter=';',comment='%',dtype='string',header=None,error_bad_lines=False,warn_bad_lines=False,engine='python')
     wifi_id=pd.read_table('wifi_id.txt',delimiter=',',dtype='string',engine='python')
@@ -97,10 +132,14 @@ def processwifi(folder,dir):
     finaldensewifi['lat']=finaldensewifi['lat'].interpolate(method='linear')
     finaldensewifi['lng']=finaldensewifi['lng'].interpolate(method='linear')
     finaldensewifi.reset_index(inplace=True,drop=True)
-    finaldensewifi.to_csv('int0430/WiFi_'+dir+'.csv')
-    print('WiFi_'+dir+'.csv has finished!')
+    finaldensewifi.to_csv('wifi/wifi'+dir+'.csv')
+    print('wifi'+dir+'.csv has finished!')
     
 dirs = os.listdir(folder)
+
+wifi_filename = "wifi_id.txt"
+wr1 = WifiRecord("rawdata/")
+write_ap_to_file(wr1, wifi_filename)
 for dir in dirs:
     if dir != '.DS_Store':
         print('Processing: ',dir)

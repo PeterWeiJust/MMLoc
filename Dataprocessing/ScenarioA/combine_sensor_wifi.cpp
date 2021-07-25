@@ -29,29 +29,28 @@ double caldistance(double wifix, double wifiy, double sensorx, double sensory) {
 	return sqrt(pow(wifix - sensorx, 2) + pow(wifiy - sensory, 2));
 }
 
-string wifiroute = "D:/src/ScenarioA/wifidata/intapril/wifi_int2_14.csv";
-string sensorroute = "D:/src/ScenarioA/overlap_timestep1000/";
-string outputroute = "D:/src/ScenarioA/sensordata/sensor_wifi_timestep1000_";
+string wifiroute = "D:/src/MM-Loc/ScenarioA/wifi";
+string sensorroute = "D:/src/MM-Loc/ScenarioA/sensordata/overlap_timestep1000/";
+string outputroute = "D:/src/MM-Loc/ScenarioA/sensor_wifi_timestep1000_";
 
 int main() {
 	string value;
 	ifstream finwifi, finsensor;
 
-	finwifi.open(wifiroute, ios::in);
-	vector<vector<string>>wifidata;
-	while (finwifi.good())
-	{
-		getline(finwifi, value);
-		vector<string>wifirow;
-		SplitString(value, wifirow, ",");
-
-		wifidata.push_back(wifirow);
-	}
-	finwifi.close();
-	finwifi.clear();
-
-
 	for (int k = 1; k < 15; k++) {
+		finwifi.open(wifiroute + to_string(k) + ".csv", ios::in);
+		vector<vector<string>>wifidata;
+		while (finwifi.good())
+		{
+			getline(finwifi, value);
+			vector<string>wifirow;
+			SplitString(value, wifirow, ",");
+
+			wifidata.push_back(wifirow);
+		}
+		finwifi.close();
+		finwifi.clear();
+
 
 		finsensor.open(sensorroute + to_string(k) + "_timestep1000_overlap.csv", ios::in);
 		vector<vector<string>>sensordata;

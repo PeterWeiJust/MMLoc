@@ -1,11 +1,3 @@
-#!/usr/bin/env python3
-# -*- coding: utf-8 -*-
-"""
-Created on Sat Feb  8 17:26:25 2020
-
-@author: weixijia
-"""
-
 import xml.etree.ElementTree as ET
 import math
 import numpy as np
@@ -234,3 +226,83 @@ def combine_wifi(filepath,wifi_input_size):
     location=np.column_stack((lat,lng))
     location=scaler.fit_transform(location)
     return np.array(wifidata),location
+	
+time_step=1000
+DownSample_num=100
+SensorTrain1, location1 = overlapping('overlap_timestep1000/1_timestep1000_overlap900.csv',3, time_step)
+SensorTrain2, location2 = overlapping('overlap_timestep1000/2_timestep1000_overlap900.csv',3, time_step)
+SensorTrain3, location3 = overlapping('overlap_timestep1000/3_timestep1000_overlap900.csv',3, time_step)
+SensorTrain4, location4 = overlapping('overlap_timestep1000/4_timestep1000_overlap900.csv',3, time_step)
+SensorTrain5, location5 = overlapping('overlap_timestep1000/5_timestep1000_overlap900.csv',3, time_step)
+SensorTrain6, location6 = overlapping('overlap_timestep1000/6_timestep1000_overlap900.csv',3, time_step)
+SensorTrain7, location7 = overlapping('overlap_timestep1000/7_timestep1000_overlap900.csv',3, time_step)
+SensorTrain8, location8 = overlapping('overlap_timestep1000/8_timestep1000_overlap900.csv',3, time_step)
+SensorTrain9, location9 = overlapping('overlap_timestep1000/9_timestep1000_overlap900.csv',3, time_step)
+SensorTrain10, location10 = overlapping('overlap_timestep1000/10_timestep1000_overlap900.csv',3, time_step)
+SensorTrain11, location11 = overlapping('overlap_timestep1000/11_timestep1000_overlap900.csv',3, time_step)
+SensorTrain12, location12 = overlapping('overlap_timestep1000/12_timestep1000_overlap900.csv',3, time_step)
+SensorTrain13, location13 = overlapping('overlap_timestep1000/13_timestep1000_overlap900.csv',3, time_step)
+SensorTrain14, location14 = overlapping('overlap_timestep1000/14_timestep1000_overlap900.csv',3, time_step)
+
+SensorTrain1=SimpleDownsampling(SensorTrain1,DownSample_num)
+SensorTrain2=SimpleDownsampling(SensorTrain2,DownSample_num)
+SensorTrain3=SimpleDownsampling(SensorTrain3,DownSample_num)
+SensorTrain4=SimpleDownsampling(SensorTrain4,DownSample_num)
+SensorTrain5=SimpleDownsampling(SensorTrain5,DownSample_num)
+SensorTrain6=SimpleDownsampling(SensorTrain6,DownSample_num)
+SensorTrain7=SimpleDownsampling(SensorTrain7,DownSample_num)
+SensorTrain8=SimpleDownsampling(SensorTrain8,DownSample_num)
+SensorTrain9=SimpleDownsampling(SensorTrain9,DownSample_num)
+SensorTrain10=SimpleDownsampling(SensorTrain10,DownSample_num)
+SensorTrain11=SimpleDownsampling(SensorTrain11,DownSample_num)
+SensorTrain12=SimpleDownsampling(SensorTrain12,DownSample_num)
+SensorTrain13=SimpleDownsampling(SensorTrain13,DownSample_num)
+SensorTrain14=SimpleDownsampling(SensorTrain14,DownSample_num)
+
+Wifis=[]
+for i in range(1,15):
+    wifitemp,locationtemp=combine_wifi('sensor_wifi_timestep1000_'+str(i)+'.csv',102)
+    Wifis.append(wifitemp)
+
+
+SensorTrain=np.concatenate((SensorTrain1,SensorTrain2,SensorTrain3,SensorTrain4, SensorTrain5,SensorTrain6,SensorTrain7,SensorTrain8),axis=0)
+locationtrain=np.concatenate((location1,location2,location3,location4,location5,location6,location7,location8),axis=0)
+WifiTrain=np.concatenate((Wifis[0],Wifis[1],Wifis[2],Wifis[3],Wifis[4],Wifis[5],Wifis[6],Wifis[7]),axis=0)
+
+SensorVal=np.concatenate((SensorTrain9,SensorTrain10,SensorTrain11,SensorTrain12,SensorTrain13),axis=0)
+locationval=np.concatenate((location9,location10,location11,location12,location13),axis=0)
+WifiVal=np.concatenate((Wifis[8],Wifis[9],Wifis[10],Wifis[11],Wifis[12]),axis=0)
+
+SensorTest=SensorTrain14
+locationtest=location14
+WifiTest=Wifis[13]
+
+np.save('overlap_timestep1000/overlap_ds_sensor_train.npy',SensorTrain)
+np.save('overlap_timestep1000/overlap_ds_location_train.npy',locationtrain)
+np.save('overlap_timestep1000/overlap_ds_wifi_train.npy',WifiTrain)
+
+np.save('overlap_timestep1000/overlap_ds_sensor_val.npy',SensorVal)
+np.save('overlap_timestep1000/overlap_ds_location_val.npy',locationval)
+np.save('overlap_timestep1000/overlap_ds_wifi_val
+.npy',WifiVal)
+
+np.save('overlap_timestep1000/overlap_ds_sensor_train.npy',SensorTest)
+np.save('overlap_timestep1000/overlap_ds_sensor_train.npy',locationtest)
+np.save('overlap_timestep1000/overlap_ds_sensor_train.npy',WifiTest)
+
+train_sensor=SensorBaselineDataset()
+SensorTrain=train_sensor.sensortrain
+locationtrain=train_sensor.labeltrain
+SensorVal=train_sensor.sensorval
+locationval=train_sensor.labelval
+SensorTest=train_sensor.sensortest
+locationtest=train_sensor.labeltest
+
+np.save('overlap_timestep1000/sensor_baseline_train.npy',SensorTrain)
+np.save('overlap_timestep1000/location_train.npy',locationtrain)
+
+np.save('overlap_timestep1000/sensor_baseline_val.npy',SensorVal)
+np.save('overlap_timestep1000/location_val.npy',locationval)
+
+np.save('overlap_timestep1000/sensor_baseline_test.npy',SensorTest)
+np.save('overlap_timestep1000/location_test.npy',locationtest)

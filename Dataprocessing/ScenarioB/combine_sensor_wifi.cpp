@@ -29,15 +29,15 @@ void SplitString(const string& s, vector<string>& v, const string& c)
 double caldistance(double wifix, double wifiy, double sensorx, double sensory) {
 	return sqrt(pow(wifix - sensorx, 2) + pow(wifiy - sensory, 2));
 }
-string wifiroute = "D:/src/ScenarioB/wifidata/intapril/wifi_int_";
-string sensorroute = "D:/src/ScenarioB/overlap_timestep1000/";
-string outputroute = "D:/src/ScenarioB/sensordata/sensor_wifi_timestep1000_";
+string wifiroute = "D:/src/MM-Loc/ScenarioB/wifi";
+string sensorroute = "D:/src/MM-Loc/ScenarioB/sensordata/overlap_timestep1000/";
+string outputroute = "D:/src/MM-Loc/ScenarioB/sensor_wifi_timestep1000_";
 
 int main() {
 	string value;
 	ifstream finwifi, finsensor;
 
-	for (int k = 2; k < 15; k++) {
+	for (int k = 1; k < 15; k++) {
 
 		finwifi.open(wifiroute + to_string(k) + ".csv", ios::in);
 		vector<vector<string>>wifidata;
